@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import cv2
+import time
 
 
 def VIBE(frame, samples, hashMin, N, R, phi, listSegMap):
@@ -13,7 +14,7 @@ def VIBE(frame, samples, hashMin, N, R, phi, listSegMap):
 
     # classification
     clonesample = np.array([[[1000] * width] * height]*N)
-    print(clonesample.shape)
+    # print(clonesample.shape)
     res = np.zeros((height, width, N)).astype(np.uint8)
     block_frame = np.array([frame[:, :]] * N)
     posbg = np.where(listSegMap == 0)
@@ -134,12 +135,17 @@ while success:
     success, frame = cap.read()
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
+    time1 = time.time()
     segMap, samples, listSegMap = VIBE(gray, samples, hashMin, N, R, phi, listSegMap)
     # segMap = new_ViBE(gray, samples, hashMin, N, R, phi)
-    # cv2.imwrite("ff.jpg", segMap)
-    cv2.imshow('actual frame', frame)
-    cv2.imshow('gray', gray)
-    cv2.imshow('segMap', segMap)
+    time2 = time.time()
+    print('Time updating: %.4f' % (time2-time1))
+    cv2.imwrite("segMap.jpg", segMap)
+    cv2.imwrite("Actual.jpg", frame)
+    cv2.imwrite("Gray.jpg", gray)
+    cv2.imshow('Actual Frame', frame)
+    cv2.imshow('Gray Frame', gray)
+    cv2.imshow('segMap Frame', segMap)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):  # Break while loop if video ends
         break
